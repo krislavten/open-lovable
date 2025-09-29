@@ -3,6 +3,7 @@ import { createGroq } from '@ai-sdk/groq';
 import { createAnthropic } from '@ai-sdk/anthropic';
 import { createOpenAI } from '@ai-sdk/openai';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
+import { createAzure } from '@ai-sdk/azure';
 import { streamText } from 'ai';
 import type { SandboxState } from '@/types/sandbox';
 import { selectFilesForEdit, getFileContents, formatFilesForAI } from '@/lib/context-selector';
@@ -42,6 +43,11 @@ const googleGenerativeAI = createGoogleGenerativeAI({
 const openai = createOpenAI({
   apiKey: process.env.AI_GATEWAY_API_KEY ?? process.env.OPENAI_API_KEY,
   baseURL: isUsingAIGateway ? aiGatewayBaseURL : process.env.OPENAI_BASE_URL,
+});
+
+const azure = createAzure({
+  resourceName: process.env.AZURE_OPENAI_RESOURCE_NAME, // Azure resource name
+  apiKey: process.env.AZURE_OPENAI_API_KEY,
 });
 
 // Helper function to analyze user preferences from conversation history
@@ -1216,18 +1222,22 @@ MORPH FAST APPLY MODE (EDIT-ONLY):
         const isAnthropic = model.startsWith('anthropic/');
         const isGoogle = model.startsWith('google/');
         const isOpenAI = model.startsWith('openai/');
+        const isAzure = model.startsWith('azure/');
         const isKimiGroq = model === 'moonshotai/kimi-k2-instruct-0905';
         const modelProvider = isAnthropic ? anthropic : 
                               (isOpenAI ? openai : 
                               (isGoogle ? googleGenerativeAI : 
-                              (isKimiGroq ? groq : groq)));
-        
+                              (isAzure ? azure : 
+                              (isKimiGroq ? groq : groq))));
+                                
         // Fix model name transformation for different providers
         let actualModel: string;
         if (isAnthropic) {
           actualModel = model.replace('anthropic/', '');
         } else if (isOpenAI) {
           actualModel = model.replace('openai/', '');
+        } else if (isAzure) {
+          actualModel = model.replace('azure/', '');
         } else if (isKimiGroq) {
           // Kimi on Groq - use full model string
           actualModel = 'moonshotai/kimi-k2-instruct-0905';
@@ -1747,6 +1757,8 @@ Provide the complete file content without any truncation. Include all necessary 
                   completionModelName = model.replace('anthropic/', '');
                 } else if (model.includes('google')) {
                   completionModelName = model.replace('google/', '');
+                } else if (model.includes('azure')) {
+                  completionModelName = model.replace('azure/', '');
                 } else {
                   completionModelName = model;
                 }
