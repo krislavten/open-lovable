@@ -4,10 +4,9 @@ export default function HomeHeroBadge() {
   return (
     <Link
       className="p-4 rounded-full flex w-max mx-auto mb-12 lg:mb-16 items-center relative inside-border before:border-border-faint group"
-      href="#"
-      onClick={(e) => e.preventDefault()}
+      href="/generation"
     >
-      <div className="px-8 text-label-x-small">Website Builder</div>
+      <div className="px-8 text-label-x-small">AI Generator</div>
 
       <div className="p-1">
         <div className="size-18 bg-accent-black flex-center rounded-full group-hover:bg-heat-100 transition-all group-hover:w-30">
