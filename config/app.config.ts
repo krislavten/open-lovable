@@ -56,6 +56,7 @@ export const appConfig = {
     // Available models
     availableModels: [
       'openai/gpt-5',
+      'azure/gpt-4o',
       'moonshotai/kimi-k2-instruct-0905',
       'anthropic/claude-sonnet-4-20250514',
       'google/gemini-2.0-flash-exp'
@@ -64,6 +65,7 @@ export const appConfig = {
     // Model display names
     modelDisplayNames: {
       'openai/gpt-5': 'GPT-5',
+      'azure/gpt-4o': 'GPT-4o',
       'moonshotai/kimi-k2-instruct-0905': 'Kimi K2 (Groq)',
       'anthropic/claude-sonnet-4-20250514': 'Sonnet 4',
       'google/gemini-2.0-flash-exp': 'Gemini 2.0 Flash (Experimental)'

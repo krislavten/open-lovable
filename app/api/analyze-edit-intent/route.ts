@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createGroq } from '@ai-sdk/groq';
 import { createAnthropic } from '@ai-sdk/anthropic';
 import { createOpenAI } from '@ai-sdk/openai';
+import { createAzure } from '@ai-sdk/azure';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { generateObject } from 'ai';
 import { z } from 'zod';
@@ -24,6 +25,12 @@ const anthropic = createAnthropic({
 const openai = createOpenAI({
   apiKey: process.env.AI_GATEWAY_API_KEY ?? process.env.OPENAI_API_KEY,
   baseURL: isUsingAIGateway ? aiGatewayBaseURL : process.env.OPENAI_BASE_URL,
+});
+
+
+const azure = createAzure({
+  resourceName: process.env.AZURE_OPENAI_RESOURCE_NAME, // Azure resource name
+  apiKey: process.env.AZURE_OPENAI_API_KEY,
 });
 
 const googleGenerativeAI = createGoogleGenerativeAI({
@@ -111,8 +118,10 @@ export async function POST(request: NextRequest) {
       if (model.includes('gpt-oss')) {
         aiModel = groq(model);
       } else {
-        aiModel = openai(model.replace('openai/', ''));
+         aiModel = openai(model.replace('openai/', ''));
       }
+    } else if (model.startsWith('azure/')) {
+      aiModel = azure(model.replace('azure/', ''));
     } else if (model.startsWith('google/')) {
       aiModel = googleGenerativeAI(model.replace('google/', ''));
     } else {
